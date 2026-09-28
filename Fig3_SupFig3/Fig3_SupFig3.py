@@ -166,7 +166,7 @@ def plot_grid(dfs_dict, n_bootstrap=200, frac=0.4,
 
         ax = axes[i]
 
-        # ---- Clean data ----
+        # Clean data
         df = (
             df.replace([np.inf, -np.inf], np.nan)
               .dropna(subset=["Expression", "s_T0_T7", "Replicate"])
@@ -177,7 +177,7 @@ def plot_grid(dfs_dict, n_bootstrap=200, frac=0.4,
         x_data = df_comp["Expression"].values
         y_data = df_comp["s_T0_T7"].values
 
-        # ---- RAW POINTS (faint) ----
+        # Raw points
         ax.scatter(
             x_data,
             y_data,
@@ -198,7 +198,7 @@ def plot_grid(dfs_dict, n_bootstrap=200, frac=0.4,
             x_fit = loess_fit[:, 0]
             y_fit = loess_fit[:, 1]
 
-            # ---- Bootstrap for CI ----
+            # CI bootstrap
             y_boots = np.zeros((n_bootstrap, len(x_fit)))
 
             rng = np.random.default_rng()
@@ -214,7 +214,7 @@ def plot_grid(dfs_dict, n_bootstrap=200, frac=0.4,
                 x_b = x_data[idx]
                 y_b = y_data[idx]
 
-                # Bootstrap LOWESS
+                # Bootstrap LOESS
                 loess_b = lowess(
                     y_b,
                     x_b,
@@ -229,7 +229,7 @@ def plot_grid(dfs_dict, n_bootstrap=200, frac=0.4,
                     loess_b[:, 1]
                 )
 
-            # ---- Confidence intervals ----
+            # CI
             lower = np.percentile(
                 y_boots,
                 100 * (1 - ci) / 2,
@@ -242,7 +242,7 @@ def plot_grid(dfs_dict, n_bootstrap=200, frac=0.4,
                 axis=0
             )
 
-            # ---- Plot LOWESS + CI ----
+            # Plot LOESS
             ax.plot(
                 x_fit,
                 y_fit,
@@ -262,7 +262,6 @@ def plot_grid(dfs_dict, n_bootstrap=200, frac=0.4,
         ax.set_ylim(ymin, ymax)
         ax.grid(True)
 
-    # ---- Remove empty panels ----
     for j in range(n_plots, len(axes)):
         fig.delaxes(axes[j])
 
